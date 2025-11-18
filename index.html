@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>Referentietool Sprongafstand</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+        background: #f4f4f9;
+    }
+    h1 {
+        color: #333;
+    }
+    .container {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        width: 400px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+        font-weight: bold;
+    }
+    select {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0 20px 0;
+        font-size: 16px;
+    }
+    .result {
+        margin-top: 20px;
+        font-size: 18px;
+        padding: 15px;
+        background: #e9f5ff;
+        border-left: 5px solid #0077cc;
+        border-radius: 5px;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Referentietool Sprongafstand</h1>
+
+<div class="container">
+    <label>Leeftijdscategorie:</label>
+    <select id="ageSelect" onchange="updateLengths()">
+        <option value="">-- Kies leeftijd --</option>
+        <option value="16-20">16–20 jaar</option>
+        <option value="21-30">21–30 jaar</option>
+        <option value="41-50">41–50 jaar</option>
+        <option value="51-60">51–60 jaar</option>
+    </select>
+
+    <label>Beenlengte (cm):</label>
+    <select id="lengthSelect" onchange="showResult()">
+        <option value="">-- Kies beenlengte --</option>
+    </select>
+
+    <div id="resultBox" class="result" style="display:none;">
+        <p><strong>Minimale sprongafstand:</strong> <span id="minValue"></span> m</p>
+        <p><strong>Maximale sprongafstand:</strong> <span id="maxValue"></span> m</p>
+    </div>
+</div>
+
+<script>
+// Referentiewaarden uit jouw SPSS-tabel
+const data = {
+    "16-20": {
+        "86-90": {min: 5.31, max: 6.08},
+        "91-95": {min: 6.00, max: 6.00}
+    },
+    "21-30": {
+        "86-90": {min: 4.48, max: 5.90},
+        "91-95": {min: 5.58, max: 5.74},
+        "96-100": {min: 5.65, max: 7.15},
+        "101-105": {min: 6.54, max: 6.54}
+    },
+    "41-50": {
+        "86-90": {min: 4.35, max: 4.35}
+    },
+    "51-60": {
+        "76-80": {min: 2.30, max: 2.30},
+        "81-85": {min: 2.63, max: 4.72}
+    }
+};
+
+function updateLengths() {
+    const age = document.getElementById("ageSelect").value;
+    const lengthSelect = document.getElementById("lengthSelect");
+
+    // Reset
+    lengthSelect.innerHTML = '<option value="">-- Kies beenlengte --</option>';
+    document.getElementById("resultBox").style.display = "none";
+
+    if (!age) return;
+
+    const lengths = Object.keys(data[age]);
+
+    lengths.forEach(len => {
+        const option = document.createElement("option");
+        option.value = len;
+        option.textContent = len + " cm";
+        lengthSelect.appendChild(option);
+    });
+}
+
+function showResult() {
+    const age = document.getElementById("ageSelect").value;
+    const length = document.getElementById("lengthSelect").value;
+
+    if (!age || !length) return;
+
+    const result = data[age][length];
+
+    document.getElementById("minValue").textContent = result.min.toFixed(2);
+    document.getElementById("maxValue").textContent = result.max.toFixed(2);
+    document.getElementById("resultBox").style.display = "block";
+}
+</script>
+
+</body>
+</html> 
